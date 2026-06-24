@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function WelcomeScreen() {
+export default function ResetPassword() {
   return (
     <View style={styles.container}>
-      <Text>PetHealthRecord</Text>
+      <Text>ResetPassword</Text>
       <StatusBar style="auto" />
     </View>
   );
