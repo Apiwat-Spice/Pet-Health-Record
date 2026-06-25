@@ -7,20 +7,72 @@ import {
   Alert,
 } from "react-native";
 import { useState } from "react";
-
+const API_URL = "http://10.0.2.2:3000";
 export default function OtpScreen({ navigation, route }) {
   const { email } = route.params;
   const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleVerify = () => {
+  const handleResendOtp = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${API_URL}/resend-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "ส่ง OTP ใหม่ไม่สำเร็จ");
+      }
+
+      Alert.alert("ส่งสำเร็จ", "ส่ง OTP ใหม่ไปที่อีเมลแล้ว");
+    } catch (error) {
+      Alert.alert("เกิดข้อผิดพลาด", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleVerify = async () => {
     if (otp.length !== 6) {
       Alert.alert("OTP ไม่ครบ", "กรุณากรอกรหัส OTP 6 หลัก");
       return;
     }
 
-    // MOCKUP:
-    // ตอนนี้ยังไม่ได้เช็ก OTP กับ Supabase จริง
-    navigation.replace("DashboardScreenPet");
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${API_URL}/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          otp,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "ยืนยัน OTP ไม่สำเร็จ");
+      }
+
+      Alert.alert("สำเร็จ", "ยืนยันบัญชีเรียบร้อยแล้ว");
+
+      navigation.replace("Login");
+    } catch (error) {
+      console.log("Verify OTP error:", error);
+      Alert.alert("ยืนยันไม่สำเร็จ", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,14 +93,21 @@ export default function OtpScreen({ navigation, route }) {
         keyboardType="number-pad"
         maxLength={6}
       />
-
-      <Button title="Verify OTP" onPress={handleVerify} />
+      
 
       <View style={{ marginTop: 12 }}>
         <Button
-          title="กลับไป Register"
-          onPress={() => navigation.goBack()}
+          title={loading ? "กำลังตรวจสอบ..." : "Verify OTP"}
+          onPress={handleVerify}
+          disabled={loading}
         />
+        <View style={{ marginTop: 12 }}>
+          <Button
+            title="ส่ง OTP ใหม่"
+            onPress={handleResendOtp}
+            disabled={loading}
+          />
+        </View>
       </View>
     </View>
   );
