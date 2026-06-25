@@ -18,69 +18,79 @@ export default function LoginScreen({ navigation }) {
   const [isChecked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
-const handleLogin = async () => {
-  const cleanEmail = email.trim().toLowerCase();
+  const handleLogin = async () => {
+    const cleanEmail = email.trim().toLowerCase();
 
-  if (!cleanEmail || !password) {
-    Alert.alert("กรอกข้อมูลไม่ครบ", "กรุณากรอกอีเมลและรหัสผ่าน");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const response = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: cleanEmail,
-        password,
-      }),
-    });
-
-    const text = await response.text();
-
-    console.log("status =", response.status);
-    console.log("response =", text);
-
-    let result;
-
-    try {
-      result = JSON.parse(text);
-    } catch {
-      throw new Error("Server ส่งข้อมูลไม่ใช่ JSON");
-    }
-
-
-    if (response.status === 403 && result.goToOtp) {
-      Alert.alert("ยังไม่ได้ยืนยัน OTP", result.message);
-
-      navigation.replace("Otp", {
-        email: result.email,
-      });
-
+    if (!cleanEmail || !password) {
+      Alert.alert("กรอกข้อมูลไม่ครบ", "กรุณากรอกอีเมลและรหัสผ่าน");
       return;
     }
 
-    if (!response.ok) {
-      throw new Error(result.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: cleanEmail,
+          password,
+        }),
+      });
+
+      const text = await response.text();
+
+      console.log("status =", response.status);
+      console.log("response =", text);
+
+      let result;
+
+      try {
+        result = JSON.parse(text);
+      } catch {
+        throw new Error("Server ส่งข้อมูลไม่ใช่ JSON");
+      }
+
+
+      if (response.status === 403 && result.goToOtp) {
+        Alert.alert("ยังไม่ได้ยืนยัน OTP", result.message);
+
+        navigation.replace("Otp", {
+          email: result.email,
+        });
+
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(result.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+      }
+
+      Alert.alert(
+        "เข้าสู่ระบบสำเร็จ",
+        `ยินดีต้อนรับ ${result.user?.firstname || ""}`
+      );
+
+      const role = result.user?.role?.toLowerCase();
+
+      console.log("LOGIN ROLE =", role);
+
+      if (role === "vet") {
+        navigation.replace("DashboardScreenVet");
+      } else if (role === "petowner") {
+        navigation.replace("DashboardScreenPet");
+      } else {
+        Alert.alert("Role ไม่ถูกต้อง", `ไม่พบหน้าสำหรับ role: ${role}`);
+      }
+    } catch (error) {
+      console.log("Login error:", error);
+      Alert.alert("เข้าสู่ระบบไม่สำเร็จ", error.message);
+    } finally {
+      setLoading(false);
     }
-
-    Alert.alert(
-      "เข้าสู่ระบบสำเร็จ",
-      `ยินดีต้อนรับ ${result.user?.firstname || ""}`
-    );
-
-    navigation.replace("DashboardScreenPet");
-  } catch (error) {
-    console.log("Login error:", error);
-    Alert.alert("เข้าสู่ระบบไม่สำเร็จ", error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>เข้าสู่ระบบ</Text>
@@ -104,7 +114,7 @@ const handleLogin = async () => {
 
       <View style={styles.checkRow}>
         <Checkbox value={isChecked} onValueChange={setChecked} />
-        <Text style={styles.checkText}>Remember</Text>
+        <Text style={styles.checkText}>Remember me</Text>
       </View>
 
       <Button

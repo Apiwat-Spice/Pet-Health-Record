@@ -12,12 +12,13 @@ import Checkbox from "expo-checkbox";
 
 const API_URL = "http://10.0.2.2:3000";
 
-export default function RegisterScreen({ navigation }) {
+export default function RegisterScreen({ navigation, role = "petowner" }) {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [vetLicense, setVetLicense] = useState("");
   const [isChecked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +37,10 @@ export default function RegisterScreen({ navigation }) {
       Alert.alert("ยังไม่ได้ยอมรับเงื่อนไข", "กรุณาติ๊ก checkbox ก่อนสมัคร");
       return;
     }
-
+    if (role === "vet" && !vetLicense.trim()) {
+      Alert.alert("กรอกข้อมูลไม่ครบ", "กรุณากรอกเลขใบอนุญาตสัตวแพทย์");
+      return;
+    }
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/register`, {
@@ -48,9 +52,9 @@ export default function RegisterScreen({ navigation }) {
           firstname: firstname.trim(),
           lastname: lastname.trim(),
           email: email.trim(),
-          password: password,
-          role: "petowner",
-          vetLicense: null,
+          password,
+          role,
+          vetLicense: role === "vet" ? vetLicense.trim() : null,
         }),
       });
       const result = await response.json();
@@ -115,7 +119,17 @@ export default function RegisterScreen({ navigation }) {
         placeholder="ยืนยันรหัสผ่าน"
         secureTextEntry
       />
-
+      {role === "vet" && (
+        <>
+          <Text>Vet License</Text>
+          <TextInput
+            style={styles.input}
+            value={vetLicense}
+            onChangeText={setVetLicense}
+            placeholder="เลขใบอนุญาตสัตวแพทย์"
+          />
+        </>
+      )}
       <View style={styles.checkRow}>
         <Checkbox value={isChecked} onValueChange={setChecked} />
         <Text style={styles.checkText}>ยอมรับเงื่อนไขการใช้งาน</Text>
