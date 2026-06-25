@@ -10,14 +10,7 @@ import {
 import { useState } from "react";
 import Checkbox from "expo-checkbox";
 
-// ห้าม import supabase ตรงนี้
-// import { supabase } from "../../lib/supabase";
-
-// ถ้ารันบน Expo Web:
-const API_URL = "http://localhost:3000";
-
-// ถ้ารันบนมือถือจริง ให้เปลี่ยน localhost เป็น IPv4 คอมมึง เช่น:
-// const API_URL = "http://192.168.1.10:3000";
+const API_URL = "http://10.0.2.2:3000";
 
 export default function RegisterScreen({ navigation }) {
   const [firstname, setFirstname] = useState("");
@@ -46,7 +39,6 @@ export default function RegisterScreen({ navigation }) {
 
     try {
       setLoading(true);
-
       const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: {
@@ -57,21 +49,15 @@ export default function RegisterScreen({ navigation }) {
           lastname: lastname.trim(),
           email: email.trim(),
           password: password,
-
-          // ตอนนี้สมัครเป็นเจ้าของสัตว์เลี้ยงก่อน
           role: "petowner",
           vetLicense: null,
         }),
       });
-
       const result = await response.json();
-
       if (!response.ok) {
         throw new Error(result.message || "สมัครไม่สำเร็จ");
       }
-
       console.log("register success:", result);
-
       navigation.navigate("Otp", {
         email: email.trim(),
       });
