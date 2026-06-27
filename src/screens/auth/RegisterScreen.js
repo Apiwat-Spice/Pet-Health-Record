@@ -6,6 +6,7 @@ import {
   TextInput,
   Button,
   Alert,
+  TouchableOpacity
 } from "react-native";
 import { useState } from "react";
 import Checkbox from "expo-checkbox";
@@ -135,16 +136,19 @@ export default function RegisterScreen({ navigation, role = "petowner" }) {
         <Text style={styles.checkText}>ยอมรับเงื่อนไขการใช้งาน</Text>
       </View>
 
-      <Button
-        title={loading ? "กำลังสมัคร..." : "Register"}
+      <TouchableOpacity
         onPress={handleRegister}
         disabled={loading}
-      />
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "กำลังสมัคร..." : "Register"}
+        </Text>
+      </TouchableOpacity>
 
-      <Button
-        title="มีบัญชีแล้ว? Login"
-        onPress={() => navigation.navigate("Login")}
-      />
+      <TouchableOpacity onPress={()=>navigation.navigate("Login")}>
+        <Text style={styles.loginText}>มีบัญชีแล้ว? <Text style={{color:"#74A1C0"}}>Login</Text></Text>
+      </TouchableOpacity>
 
       <StatusBar style="auto" />
     </View>
@@ -181,4 +185,18 @@ const styles = StyleSheet.create({
   checkText: {
     marginLeft: 8,
   },
+  button: {
+    borderRadius: 10,
+    padding:20,
+    backgroundColor:'#96B9D7'
+  },  
+  buttonText: {
+    textAlign:'center',
+    color:'#ffff',
+    fontWeight:'bold'
+  },loginText:{
+    textAlign : 'center',
+    padding:20,
+    color:'#A6A6A6'
+  }
 });
