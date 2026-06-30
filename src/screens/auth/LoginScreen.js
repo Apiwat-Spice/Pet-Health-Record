@@ -39,12 +39,7 @@ export default function LoginScreen({ navigation }) {
           password,
         }),
       });
-
       const text = await response.text();
-
-      console.log("status =", response.status);
-      console.log("response =", text);
-
       let result;
 
       try {
@@ -72,17 +67,16 @@ export default function LoginScreen({ navigation }) {
         "เข้าสู่ระบบสำเร็จ",
         `ยินดีต้อนรับ ${result.user?.firstname || ""}`
       );
-
       const role = result.user?.role?.toLowerCase();
 
       console.log("LOGIN ROLE =", role);
 
       if (role === "vet") {
-        navigation.replace("DashboardScreenVet");
+        navigation.replace("Vet");
       } else if (role === "petowner") {
-        navigation.replace("DashboardScreenPet");
+        navigation.replace("PetOwner");
       } else {
-        Alert.alert("Role ไม่ถูกต้อง", `ไม่พบหน้าสำหรับ role: ${role}`);
+        Alert.alert("Role ไม่ถูกต้อง");
       }
     } catch (error) {
       console.log("Login error:", error);

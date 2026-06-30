@@ -4,7 +4,9 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function DashboardScreenPet() {
   return (
     <View style={styles.container}>
-      <Text>DashboardScreenPet</Text>
+      <Text>DashboardScreenPet2222</Text>
+      <Text>DashboardScreenPet2222</Text>
+      <Text>DashboardScreenPet2222</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -13,7 +15,7 @@ export default function DashboardScreenPet() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ff6767',
     alignItems: 'center',
     justifyContent: 'center',
   },

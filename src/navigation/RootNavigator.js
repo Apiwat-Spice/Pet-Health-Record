@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
-
+import AuthNavigator from "./AuthNavigator";
 import UserNavigator from "./UserNavigator";
 import AdminNavigator from "./AdminNavigator";
 
